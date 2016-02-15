@@ -25,7 +25,6 @@
     .theme-dark hr{border-top: 1px solid #717171;box-shadow: 1px 1px black;}
     .theme-dark #articleContent, .theme-dark #articleContent p{color: gray;}
     .article-more{text-align: right;font-size: 24px;color: gray;display: none;}
-    #articleShare{padding: 0px 10px;cursor: pointer;}
     </style>
 </head>
 
@@ -50,9 +49,7 @@
             <hr />
             <div id="articleAuthor"></div>
             <div id="articleContent"><span class="loading">正在加载中....</span></div>
-            <div class="row article-more">
-                <span id="articleShare"> <i class="icon ion-share"></i> </span>
-            </div>
+            <div class="row article-more" id="articleMore"> <i class="icon ion-share"></i> </div>
             <input type="hidden" id="articleDay" /> 
         </div>
     </div>
@@ -63,7 +60,6 @@
     var query = undefined;
     var model = undefined;
     var dbsql = undefined;
-    var shareAction = undefined;
     var offsetNum = 0;
 
     function addEvent() {
@@ -102,17 +98,95 @@
             });
         });
 
+
         $('#btnOpenSlid').click(function() {
             api.openSlidPane({type: 'left'});
         });
 
-        $('#articleShare').click(function () {
-            var sharedMsg = {
-                text : $('#articleTitle').text()+' - '+$('#articleAuthor').text(),
-                type : "text"
-            };
-            shareAction.share(sharedMsg);
-            
+        $('#articleMore').click(function () {
+            // var buttons1 = [
+            //     {text: '请选择', label: true },
+            //     {text: '卖出', bold: true, color: 'danger', onClick: function() {
+            //         $.alert("你选择了“卖出“");
+            //       }
+            //     }, 
+            //     {text: '买入', onClick: function() {
+            //         $.alert("你选择了“买入“");
+            //       }
+            //     }
+            // ];
+            // var buttons2 = [{text: '取消', bg: 'danger'} ];
+            // var groups = [buttons1, buttons2];
+            // $.actions(groups);
+            var obj = api.require('MNActionButton');
+            obj.open({
+                layout: {
+                    row: 2,                        //（可选项）数字类型；每屏显示菜单按钮的行数；默认：2
+                    col: 3,                        //（可选项）数字类型；每屏显示菜单按钮的列数；默认：3
+                    rowSpacing: 5,                 //（可选项）数字类型；行与行之间的距离；默认：10
+                    colSpacing: 10,                //（可选项）数字类型；列与列之间的距离；默认：10
+                    offset: 0                      //（可选项）数字类型；整个菜单底部距离所属 window 底部的距离，只能为正整数；默认：0
+                },
+                animation: true,                   //（可选项）布尔类型；弹出和隐藏菜单时是否带弹出动画效果，true|false；默认：true
+                autoHide: true,                    //（可选项）布尔类型；点击菜单按钮后是否自动隐藏菜单，true|false；默认：true
+                styles: {
+                    maskBg: 'rgba(0,0,0,0.2)',     //（可选项）字符串类型；遮罩层背景，支持 rgb，rgba，#，img；默认：rgba(0,0,0,0.2)
+                    bg: '#fff',                    //（可选项）字符串类型；菜单有效区域背景，支持 rgb，rgba，#，img；默认：#fff
+                    cancelButton: {                      //（可选项）JSON 对象类型，取消按钮设置
+                        size: 44,                  //（可选项）数字类型；底部取消按钮的高和宽；默认：44
+                        bg: '#fff',                //（可选项）字符串类型；取消按钮的 100% 宽度的背景，支持rgb，rgba，#，img；默认：'#fff'
+                        icon: 'widget://res/action-button-cancel.png'  //（可选项）字符串类型：取消按钮的图标，要求本地路径（widget://、fs://）；默认：默认X型图标
+                    },
+                    item: { //（可选项）JSON 对象类型，菜单按钮设置
+                        titleColor: '#888',        //（可选项）字符串类型；菜单按钮文字颜色，支持 rgb，rgba，#；默认：#848484
+                        titleHighlight: 'dd2727',  //（可选项）字符串类型；菜单按钮文字高亮颜色，支持 rgb，rgba，#；默认：同 titleColor
+                        titleSize: 12              //（可选项）数字类型；菜单按钮文字大小，同时也是文字栏所占高度，值为 0 时不显示文字栏；默认：12
+                    },
+                    indicator: {                   //（可选项）JSON 对象类型；页标指示器样式，若不传则不显示该指示器
+                        color: '#c4c4c4',          //（可选项）字符串类型；其它页指示器颜色；支持rgb、rgba、#；默认：'#c4c4c4'
+                        highlight: '#9e9e9e'       //（可选项）字符串类型；当前页指示器颜色；支持rgb、rgba、#；默认：'#9e9e9e'
+                    }
+                },
+                items:[{ //JSON 对象类型；一个菜单项的设置信息
+                    icon: 'widget://res/icon1.png', //字符串类型；一个菜单按钮的图标路径，要求本地路径（widget://、fs://）；
+                highlight: 'widget://res/highlight1.png', //（可选项）字符串类型；一个菜单按钮的高亮图标路径，要求本地路径（widget://、fs://）；默认：同 icon
+                    title: '菜单项1',               //字符串类型；菜单按钮的文字；默认：未设置时不显示，但文字栏仍按 titleSize 设置显示高度
+                }, {
+                    icon: 'widget://res/icon2.png',
+                    highlight: 'widget://res/highlight2.png',
+                    title: '菜单项2'
+                }, {
+                    icon: 'widget://res/icon3.png',
+                    highlight: 'widget://res/highlight3.png',
+                    title: '菜单项3'
+                }, {
+                    icon: 'widget://res/icon4.png',
+                    highlight: 'widget://res/highlight4.png',
+                    title: '菜单项4'
+                }, {
+                    icon: 'widget://res/icon5.png',
+                    highlight: 'widget://res/highlight5.png',
+                    title: '菜单项5'
+                }, {
+                    icon: 'widget://res/icon6.png',
+                    highlight: 'widget://res/highlight6.png',
+                    title: '菜单项6'
+                }, {
+                    icon: 'widget://res/icon7.png',
+                    highlight: 'widget://res/highlight7.png',
+                    title: '菜单项7'
+                }, {
+                    icon: 'widget://res/icon8.png',
+                    highlight: 'widget://res/highlight8.png',
+                    title: '菜单项8'
+                }]
+            }, function(ret, err) {
+                if (ret) {
+                    alert(JSON.stringify(ret));
+                } else {
+                    alert(JSON.stringify(err));
+                }
+            });
         });
 
         $('#btnStore').click(function() {
@@ -168,7 +242,6 @@
     apiready = function() {
         query = api.require('query');
         model = api.require('model');
-        shareAction = api.require('shareAction');
         dbsql = initSqlite(api);
         model.config({
             appId: 'A6900701267871',
@@ -184,7 +257,7 @@
             getArticle(ymma.getDateStr(0), function(res) {
                 if (!res) return;
                 loadArticle(res);
-                $('.article-more').show();
+                $('#articleMore').show();
             });
         });
         ymma.addMoonEvent(api);
