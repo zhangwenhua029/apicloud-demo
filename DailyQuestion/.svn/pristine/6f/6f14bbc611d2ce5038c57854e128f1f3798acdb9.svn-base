@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>fixedPane</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/icons.min.css" />
+    <style>
+    html,
+    body {
+        background-color: rgb(39, 38, 38);
+    }
+    
+    li {
+        padding: 3px 10px;
+        padding: 3px 10px;
+        color: #777777;
+        box-shadow: 1px 1px #2B2B2B;
+        border-bottom: 1px solid #212121;
+        color: #777777;
+    }
+    
+    .liActive {
+        background-color: #3ABA63;
+    }
+    
+    li a {
+        display: block;
+        padding: 10px 30px;
+    }
+    li a span{width: 20px;}
+    </style>
+</head>
+
+<body>
+    <nav>
+        <ul>
+            <li tapmode="liActive" onclick="">
+                <a><span class="step size-21" id="btnOpenSlid">
+                      <i class="icon ion-android-time"></i>
+                    </span>
+                    今日文章
+                </a>
+            </li>
+            <li tapmode="liActive" onclick="">
+                <a><span class="step size-21" id="btnOpenSlid">
+                      <i class="icon ion-shuffle"></i>
+                    </span>
+                    随机一问
+                </a>
+            </li>
+            <li tapmode="liActive" onclick="">
+                <a><span class="step size-21" id="btnOpenSlid">
+                      <i class="icon ion-star"></i>
+                    </span>
+                    我的收藏
+                </a>
+            </li>
+            <li tapmode="liActive" onclick="">
+                <a><span class="step size-21" id="btnOpenSlid">
+                      <i class="icon ion-ios-moon"></i>
+                    </span>
+                    夜间模式
+                </a>
+            </li>
+            <li tapmode="liActive" onclick="">
+                <a><span class="step size-21" id="btnOpenSlid">
+                      <i class="icon ion-help"></i>
+                    </span>
+                    使用帮助
+                </a>
+            </li>
+            <li tapmode="liActive" onclick="">
+                <a><span class="step size-21" id="btnOpenSlid">
+                      <i class="icon ion-heart"></i>
+                    </span>
+                    给个好评
+                </a>
+            </li>
+        </ul>
+    </nav>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script>
+apiready = function() {
+    api.setStatusBarStyle({
+        style: 'dark',
+        color: '#000'
+    });
+    $api.fixStatusBar($api.dom('nav'));
+};
+</script>
+
+</html>

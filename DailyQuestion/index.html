@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>首页</title>
+    <style>
+    html {
+        height: 100%;
+        background-color: #fff;
+    }
+    
+    body {
+        background-color: #fff;
+        padding: 0;
+        margin: 0;
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: flex;
+        height: 100%;
+        -webkit-box-orient: vertical;
+        -webkit-flex-flow: column;
+        flex-flow: column;
+    }
+    </style>
+</head>
+
+<body>
+    <script>
+    apiready = function() {
+        api.openSlidLayout({
+            type: 'left',
+            leftEdge: 120,
+            slidPaneStyle: {
+                leftEdge: 120
+            },
+            fixedPane: {
+                name: 'win1',
+                url: 'html/fixed.html',
+                bgColor: '#fff',
+                bounces: false,
+                hScrollBarEnabled: false,
+                vScrollBarEnabled : false ,
+            },
+            slidPane: {
+                name: 'win2',
+                url: 'html/main.html',
+                bgColor: '#fff',
+                hScrollBarEnabled: false,
+                vScrollBarEnabled : false ,
+                bounces: false ,
+                scrollToTop : false ,
+                scaleEnabled : false 
+            }
+        }, function(ret, err) {
+            // if (ret) {
+            //     alert(JSON.stringify(ret));
+            // } else {
+            //     alert(JSON.stringify(err));
+            // }
+        });
+        api.lockSlidPane();
+    }
+    </script>
+</body>
+
+</html>

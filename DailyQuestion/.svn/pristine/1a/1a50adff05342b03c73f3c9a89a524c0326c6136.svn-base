@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>fixedPane</title>
+    <link rel="stylesheet" type="text/css" href="../css/sm.min.css" />
+    <link rel="stylesheet" type="text/css" href="../css/icons.min.css" />
+    <style>
+    html,
+    body {
+        background: #F9F9F9;
+    }
+
+    .bar.theme-dark:after, .theme-dark .bar:after {
+        background-color: inherit;
+    }
+    
+    .theme-dark #header {
+        background: #222426;
+    }
+    
+    .theme-dark .title,.theme-dark .content-block-title{color:gray;}
+    
+    </style>
+</head>
+
+<body>
+    <!-- 标题栏 -->
+    <header class="bar bar-nav" id="header">
+        <button class="button button-link button-nav pull-left">
+            <span class="step size-21 pull-left open-panel" id="btnCloseStore">&nbsp;&nbsp;
+              <i class="icon ion-ios-arrow-back"></i>
+            </span>
+        </button>
+        <button class="button button-link button-nav pull-right">
+            <span class="step size-21 pull-left open-panel" id="btnCloseStore">
+              <i class="icon ion-trash-a"></i>&nbsp;&nbsp;
+            </span>
+          </button>
+        <h1 class="title">我的收藏</h1>
+    </header>
+    <!-- 这里是页面内容区 -->
+    <div class="content native-scroll">
+        <div class="content-block-title">全部收藏</div>
+        <div class="list-block">
+            <ul id="storeList"></ul>
+        </div>
+    </div>
+</body>
+<script type='text/javascript' src='../script/zepto.min.js' charset='utf-8'></script>
+<script type='text/javascript' src='../script/sm.min.js' charset='utf-8'></script>
+<script type='text/javascript' src='../script/ymma.js' charset='utf-8'></script>
+<script>
+var dbsql = undefined;
+
+function getList() {
+    var $ulList = $('#storeList');
+    dbsql.query({
+        table: 'store'
+    }, function(data) {
+        if (data.err) {
+            alert(JSON.stringify(data));
+            return;
+        }
+        var html = [];
+        for (var i = 0, len = data.length, item; i < len; i++) {
+            item = data[i];
+            html.push('<li> <a href="javascript:openArticle(\''+item.day+'\')" class="item-link item-content">');
+            html.push('<div class="item-inner"> <div class="item-title">');
+            html.push(item.title + '</div> </div> </a> </li>');
+        }
+        $ulList.html(html.join(''));
+    });
+}
+
+function openArticle(day) {
+    api.openWin({
+        name: 'articleInfo',
+        url: './articleInfo.html',
+        pageParam : {day:day},
+        animation: {
+            type: "movein", //动画类型（详见动画类型常量）
+            subType: "from_right", //动画子类型（详见动画子类型常量）
+            duration: 300 //动画过渡时间，默认300毫秒
+        }
+    });
+}
+
+function addEvent() {
+    $('#btnCloseStore').click(function() {
+        api.closeWin();
+    });
+}
+apiready = function() {
+    var offsetHeight = getOffsetHeight(api);
+    $('#header').css('paddingTop', offsetHeight);
+    addEvent();
+    dbsql = initSqlite(api);
+    dbsql.init(getList);
+    ymma.addMoonEvent(api);
+};
+</script>
+
+</html>

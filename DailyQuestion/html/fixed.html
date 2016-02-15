@@ -1,0 +1,181 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>fixedPane</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/icons.min.css" />
+    <style>
+    html,
+    body {
+        background-color: rgb(39, 38, 38);
+    }
+    
+    li {
+        padding: 3px 10px;
+        padding: 3px 10px;
+        color: #777777;
+        box-shadow: 1px 1px #2B2B2B;
+        border-bottom: 1px solid #212121;
+        color: #777777;
+    }
+    
+    .liActive {
+        color: gainsboro;
+    }
+    
+    li a {
+        display: block;
+        padding: 10px 30px;
+    }
+    li a span{width: 20px;}
+    #btnSun{display:none;}
+    </style>
+</head>
+
+<body>
+    <nav id="nav">
+        <ul>
+            <li tapmode="liActive" id="btnToday">
+                <a><span class="step size-21" >
+                      <i class="icon ion-android-time"></i>
+                    </span>
+                    今日文章
+                </a>
+            </li>
+            <li tapmode="liActive" id="btnRandom">
+                <a><span class="step size-21" >
+                      <i class="icon ion-shuffle"></i>
+                    </span>
+                    随机一问
+                </a>
+            </li>
+            <li tapmode="liActive" id="btnCollect">
+                <a><span class="step size-21" >
+                      <i class="icon ion-star"></i>
+                    </span>
+                    我的收藏
+                </a>
+            </li>
+            <li tapmode="liActive" id="btnMoon">
+                <a><span class="step size-21" >
+                      <i class="icon ion-ios-moon"></i>
+                    </span>
+                    夜间模式
+                </a>
+            </li>
+            <li tapmode="liActive" id="btnSun">
+                <a><span class="step size-21" >
+                      <i class="icon ion-android-sunny"></i>
+                    </span>
+                    日间模式
+                </a>
+            </li>
+            <li tapmode="liActive" id="btnHelp">
+                <a><span class="step size-21" >
+                      <i class="icon ion-help"></i>
+                    </span>
+                    使用帮助
+                </a>
+            </li>
+            <li tapmode="liActive" id="btnAppraise">
+                <a><span class="step size-21" >
+                      <i class="icon ion-heart"></i>
+                    </span>
+                    给个好评
+                </a>
+            </li>
+            <li tapmode="liActive" id="btnSetting">
+                <a><span class="step size-21" >
+                      <i class="icon ion-ios-gear"></i>
+                    </span>
+                    配置
+                </a>
+            </li>
+        </ul>
+    </nav>
+</body>
+<script type='text/javascript' src='../script/zepto.min.js' charset='utf-8'></script>
+<script>
+apiready = function() {
+    var offsetHeight = getOffsetHeight(api);
+    $('#nav').css('paddingTop', offsetHeight + 20);
+    api.setStatusBarStyle({
+        style: 'dark',
+        color: '#000'
+    });
+    
+    $('#btnToday').click(function () {
+        api.sendEvent({
+            name: 'event_todayArticle'
+        });
+    });
+
+    $('#btnRandom').click(function () {
+        
+    });
+
+    $('#btnCollect').click(function () {
+        api.openWin({
+            name: 'store',
+            url: './store.html',
+            animation : {
+                type:"movein",                //动画类型（详见动画类型常量）
+                subType:"from_right",        //动画子类型（详见动画子类型常量）
+                duration:300                //动画过渡时间，默认300毫秒
+            }
+        });
+        setTimeout(function () {
+            api.closeSlidPane();
+        },200);
+    });
+
+    $('#btnMoon').click(function () {
+        $(this).hide();
+        $('#btnSun').show();
+        api.setPrefs({key: 'moon', value: 'moon'});
+        api.sendEvent({
+            name: 'event_Moon' ,
+            extra : 'moon'
+        });
+    });
+
+    $('#btnSun').click(function () {
+        $(this).hide();
+        $('#btnMoon').show();
+        api.setPrefs({key: 'moon', value: 'sun'});
+        api.sendEvent({
+            name: 'event_Moon' ,
+            extra : 'sun'
+        });
+    });
+
+    $('#btnHelp').click(function () {
+        
+    });
+
+    $('#btnAppraise').click(function () {
+        
+    });
+
+    $('#btnSetting').click(function () {
+        api.openWin({
+            name: 'store',
+            url: './setting.html',
+            animation : {
+                type:"movein",                //动画类型（详见动画类型常量）
+                subType:"from_right",        //动画子类型（详见动画子类型常量）
+                duration:300                //动画过渡时间，默认300毫秒
+            }
+        });
+        setTimeout(function () {
+            api.closeSlidPane();
+        },200);
+    });
+    
+};
+</script>
+
+</html>

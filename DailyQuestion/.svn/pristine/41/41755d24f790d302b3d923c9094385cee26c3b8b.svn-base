@@ -1,0 +1,283 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>slidPane</title>
+    <link rel="stylesheet" type="text/css" href="../css/sm.min.css" />
+    <link rel="stylesheet" type="text/css" href="../css/icons.min.css" />
+    <style>
+    body {
+        background: #F9F9F9;
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: flex;
+        height: 100%;
+        -webkit-box-orient: vertical;
+        -webkit-flex-flow: column;
+        flex-flow: column;
+    }
+    
+    #header {
+        background: #F9F9F9;
+    }
+    
+    .bar:after {
+        background-color: inherit;
+    }
+    /*.bar-nav~.content {
+        top: 0.5rem;
+    }*/
+    
+    .store .ion-ios-heart-outline:before {
+        content: "\f443";
+    }
+    
+    hr {
+        border-top: 1px solid #DCDCDC;
+        margin-top: 10px;
+        border-radius: 4px;
+        box-shadow: 1px 1px white;
+    }
+    
+    .content-block {
+        margin: 1rem 0;
+    }
+    
+    .content-block h3 {
+        text-align: center;
+        color: black;
+    }
+    
+    #articleAuthor {
+        padding: 10px;
+        text-align: center;
+        font-size: 14px;
+        padding-bottom: 0px;
+    }
+    
+    #articleContent,
+    #articleContent p {
+        color: #232323;
+        line-height: 28px;
+    }
+    
+    #articleContent p {
+        text-indent: 2em;
+    }
+    
+    #articleContent .loading {
+        text-align: center;
+        display: block;
+    }
+    
+    .theme-dark .bar:after {
+        background-color: inherit;
+    }
+    
+    .theme-dark #header {
+        background: #222426;
+    }
+    
+    .theme-dark #articleTitle {
+        color: #ABABAB;
+    }
+    
+    .theme-dark hr {
+        border-top: 1px solid #717171;
+        box-shadow: 1px 1px black;
+    }
+    
+    .theme-dark #articleContent,
+    .theme-dark #articleContent p {
+        color: gray;
+    }
+    </style>
+</head>
+
+<body>
+    <!-- 标题栏 -->
+    <header class="bar bar-nav" id="header">
+        <button class="button button-link button-nav pull-left">
+            <span class="step size-21 pull-left open-panel" id="btnOpenSlid">
+                    &nbsp;&nbsp;
+                  <i class="icon ion-navicon-round"></i>
+                </span>
+        </button>
+        <button class="button button-link button-nav pull-right">
+            <span class="step size-21" id="btnStore">
+                  <i class="icon ion-ios-heart-outline"></i>
+                  &nbsp;&nbsp;
+                </span>
+        </button>
+    </header>
+    <!-- 这里是页面内容区 -->
+    <div class="content">
+        <div class="content-block">
+            <h3 id="articleTitle"></h3>
+            <hr />
+            <div id="articleAuthor"></div>
+            <div id="articleContent"><span class="loading">正在加载中....</span></div>
+            <input type="hidden" id="articleDay" />
+        </div>
+    </div>
+    <script type='text/javascript' src='../script/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='../script/sm.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='../script/ymma.js' charset='utf-8'></script>
+    <script>
+    var query = undefined;
+    var model = undefined;
+    var dbsql = undefined;
+
+    var offsetNum = 0;
+
+    function addEvent() {
+        // 单击左侧【今日文章】时，触发的事件
+        api.addEventListener({
+            name: 'event_todayArticle'
+        }, function(ret, err) {
+            api.closeSlidPane();
+            getArticle(ymma.getDateStr(0), function(res) {
+                if (!res) return;
+                loadArticle(res);
+                offsetNum = 0;
+            });
+        });
+
+        // 左滑触发的事件
+        api.addEventListener({
+            name: 'swipeleft'
+        }, function() {
+            if (offsetNum + 1 > 0) {
+                $.toast("没有了", 1000);
+                return;
+            }
+            $.toast("后一天", 1000);
+            getArticle(ymma.getDateStr(offsetNum + 1), function(res) {
+                if (!res) return;
+                $('.content').scrollTop(0);
+                loadArticle(res);
+                offsetNum += 1;
+            });
+        });
+
+        // 右滑触发的事件
+        api.addEventListener({
+            name: 'swiperight'
+        }, function() {
+            $.toast("前一天", 1000);
+
+            getArticle(ymma.getDateStr(offsetNum - 1), function(res) {
+                if (!res) return;
+                $('.content').scrollTop(0);
+                loadArticle(res);
+                offsetNum -= 1;
+            });
+        });
+
+
+        $('#btnOpenSlid').click(function() {
+            api.openSlidPane({
+                type: 'left'
+            });
+        });
+
+        $('#btnStore').click(function() {
+            var _this = $(this);
+            if (_this.hasClass('store')) {
+                _this.removeClass('store');
+                dbsql.delete('store', ("day='" + $('#articleDay').val() + "'"), function(res) {
+                    if (res.err) alert(JSON.stringify(res.err));
+                    else $.toast("取消成功", 1000);
+                });
+            } else {
+                _this.addClass('store');
+                var sql = "insert into store(title ,day)values('" + $('#articleTitle').text() + "','" + $('#articleDay').val() + "')";
+                dbsql.executeSql({
+                    name: 'userStore',
+                    sql: sql
+                }, function(ret, err) {
+                    if (ret.status) {
+                        $.toast("收藏成功", 1000);
+                    } else {
+                        api.alert({
+                            msg: err.msg
+                        });
+                    }
+                });
+            }
+        })
+    }
+
+    function loadArticle(data) {
+        $('#articleTitle').html(data.title);
+        $('#articleContent').html(data.content);
+        $('#articleAuthor').html(data.author || '');
+        dbsql.count({
+            table: 'store',
+            where: "day='" + $('#articleDay').val() + "'"
+        }, function(size) {
+            if (size == '1') $('#btnStore').addClass('store');
+            else $('#btnStore').removeClass('store');
+        });
+    }
+
+    function getArticle(date, callback) {
+        callback = callback || function(e) {};
+        query.createQuery(
+            function(ret, err) {
+                var qid = ret.qid;
+                query.limit({
+                    qid: qid,
+                    value: 1
+                });
+                query.whereEqual({
+                    qid: qid,
+                    column: 'day',
+                    value: date
+                });
+                setTimeout(function() {
+                    model.findAll({
+                        class: 'article',
+                        qid: qid
+                    }, function(ret, err) {
+                        if (!ret || ret.length <= 0) {
+                            $.toast("没有了", 1000);
+                            return;
+                        } else {
+                            $('#articleDay').val(date);
+                            $('#articleContent').html('<span class="loading">正在加载中....</span>');
+                            callback(ret[0]);
+                        }
+                    });
+                }, 50);
+            }
+        );
+    }
+    apiready = function() {
+        query = api.require('query');
+        model = api.require('model');
+        dbsql = initSqlite(api);
+        model.config({
+            appId: 'A6900701267871',
+            appKey: 'D6B56E5A-AE13-190F-DE55-9557B8179F47'
+        });
+        var offsetHeight = getOffsetHeight(api);
+        $('#header').css('paddingTop', offsetHeight);
+        addEvent();
+        // 清空偏好设置
+        api.removePrefs({key: 'db'});
+        api.removePrefs({key: 'moon'});
+        dbsql.init(function() {
+            getArticle(ymma.getDateStr(0), function(res) {
+                if (!res) return;
+                loadArticle(res);
+            });
+        });
+        ymma.addMoonEvent(api);
+    };
+    </script>
+</body>
+
+</html>

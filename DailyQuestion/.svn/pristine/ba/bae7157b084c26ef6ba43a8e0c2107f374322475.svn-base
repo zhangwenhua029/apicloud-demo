@@ -1,0 +1,155 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>slidPane</title>
+    <link rel="stylesheet" type="text/css" href="../css/sm.min.css" />
+    <link rel="stylesheet" type="text/css" href="../css/icons.min.css" />
+    <style>
+    body {
+        background: #F9F9F9;
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: flex;
+        height: 100%;
+        -webkit-box-orient: vertical;
+        -webkit-flex-flow: column;
+        flex-flow: column;
+    }
+    
+    #header {
+        background: #F9F9F9;
+    }
+    
+    .bar:after {
+        background-color: inherit;
+    }
+    /*.bar-nav~.content {
+        top: 0.5rem;
+    }*/
+    
+    .store .ion-ios-heart-outline:before {
+        content: "\f443";
+    }
+    
+    hr {
+        border-top: 1px solid #DCDCDC;
+        margin-top: 10px;
+        border-radius: 4px;
+        box-shadow: 1px 1px white;
+    }
+    
+    .content-block {
+        margin: 1rem 0;
+    }
+    
+    #articleContent h3 {
+        text-align: center;
+        color: black;
+    }
+    
+    #articleContent p {
+        color: #232323;
+        text-indent: 2em;
+        line-height: 28px;
+    }
+    </style>
+</head>
+
+<body>
+    <!-- 标题栏 -->
+    <header class="bar bar-nav" id="header">
+        <button class="button button-link button-nav pull-left">
+            <span class="step size-21 pull-left open-panel" id="btnOpenSlid">
+                    &nbsp;&nbsp;
+                  <i class="icon ion-navicon-round"></i>
+                </span>
+        </button>
+        <button class="button button-link button-nav pull-right">
+            <span class="step size-21" id="btnStore">
+                  <i class="icon ion-ios-heart-outline"></i>
+                  &nbsp;&nbsp;
+                </span>
+        </button>
+    </header>
+    <!-- 这里是页面内容区 -->
+    <div class="content">
+        <div class="content-block" id="articleContent">
+            <h3>标题三</h3>
+            <hr />
+            <p>“我们的时间随宇宙膨胀了二百亿年，但现在，这膨胀的时间只剩不到三分钟了，之后，时间将随宇宙坍缩，时光将倒流。”丁仪走到木然的台长面前，指指摔碎的星图盘，“不必为这件古物而痛心，蓝移出现后不久，碎片就会重新复原，它会回到陈列柜中去，多少年以后，回到土中深埋，再过几千年的时间，它将回到燃烧的窑中，然后做为一团潮泥回到那位上古天文学家的手中……”，他走到那位年轻的女工程师身边，“也不要为你的父亲悲伤，他将很快复活，你们很快就会见面。如果父亲对你很重要，你应该感到安慰，因为在坍缩的宇宙中，他比你长寿，他将看着你做为婴儿离开这个世界。是的，我们这些老人都是刚刚踏上人生旅途，而你们年轻人则已近暮年，或说幼年。”他又走到省长面前，“如果过去没有，那么长江的洪水未来永远不会在您的任期内越出江堤，因为现在宇宙中的未来只剩一百秒了。坍缩宇宙中的未来就是膨胀宇宙中的过去。最大的险情要到一九九八年才会出现，但那时您的生命已接近幼年，那不是您的责任了。还有一分钟，现在无论做什么，都不会对将来产生后果，大家可以做各自喜欢的事情而不必顾虑将来，在这个时间里已经没有将来了。至于我，我现在只是干我喜欢，但以前由于气管炎而不能干的一件小事。”丁仪又用大烟斗从口袋里挖了一锅烟丝，点上悠然地抽了起来。</p>
+            <p>蓝移倒计时五十秒。</p>
+            <p>“这不可能！”省长叫到，“从逻辑上这说不通，时间反演？一切都将反过来进行，难道我们倒着说话吗？这太难以想象了！” </p>
+            <p>“您会适应的。” </p>
+            <p>蓝移倒计时四十秒。 </p>
+            <p>“也就是说，以后的一切都是重复，那历史和人生变得多么乏味。” </p>
+            <p>“不会的，你将在另一个时间里，现在的过去将是您的未来，我们现在就在那时的未来里。您不可能记住未来，蓝移开始时，您的未来一片空白，对它，您什么都不记得，什么都不知道。” </p>
+            <p>蓝移倒计时二十秒。 </p>
+            <p>※※※ </p>
+            <p>“这不可能！” </p>
+            <p>“您将会发现，从老年走向幼年，从成熟走向幼稚是多么合理，多么理所当然，如果有人谈起时间还有另一个流向，您会认为他是痴人说梦。快了，还有十几秒，十几秒后，宇宙将通过一个时间奇点，在那一点时间不存在。然后，我们将进入坍缩宇宙。” </p>
+            <p>蓝移倒计时八秒。 </p>
+            <p>“这不可能！真的不可能！！” </p>
+            <p>“没关系，您很快就会知道的。” </p>
+            <p>※※※ </p>
+            <p>蓝移倒计时五秒，四，三，二，一，零。 </p>
+            <p>宇宙中的星光由使人烦燥的红色变为空洞的白色…… </p>
+            <p>……时间奇点…… </p>
+            <p>……星光由白色变为宁静美丽的蓝色，蓝移开始了，坍缩开始了。 </p>
+            <p>…… </p>
+            <p>……了始开缩坍，了始开移蓝，色蓝的丽美静宁为变色白由光星…… </p>
+            <p>……点奇间时…… </p>
+            <p>……色白的洞空为变色红的烦燥人使由光星的中宙宇。 </p>
+            <p>零，一，二，三，四，秒五时计倒移蓝。 </p>
+            <p>“的道知会快很您，系关没” </p>
+            <p>“！！能可不的真！能可不这”。 </p>
+            <p>秒八时计倒移蓝。 </p>
+            <p>宙宇缩坍入进将们我，后然。在存不间时点一那在，点奇间时个一过通将宙宇，后秒几十，秒几十有还，了快。梦说人痴是他为认会您，向流个一另有还间时起谈人有果如，然当所理么多……</p>
+            <p></p>
+        </div>
+    </div>
+    <script type='text/javascript' src='../script/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='../script/sm.min.js' charset='utf-8'></script>
+    <script>
+    function init() {
+        $('#btnOpenSlid').click(function() {
+            api.openSlidPane({
+                type: 'left'
+            });
+        });
+
+        $('#btnStore').click(function() {
+            var _this = $(this);
+            if (_this.hasClass('store')) {
+                _this.removeClass('store');
+            } else {
+                _this.addClass('store');
+            }
+        })
+    }
+
+    function addEvent() {
+        api.addEventListener({
+            name: 'swipeleft'
+        }, function() {
+            $.toast("后一天");
+        });
+        api.addEventListener({
+            name: 'swiperight'
+        }, function() {
+            $.toast("前一天");
+        });
+    }
+    apiready = function() {
+        var offsetHeight = getOffsetHeight(api);
+        $('#header').css('paddingTop', offsetHeight);
+        init();
+        addEvent();
+
+    };
+    </script>
+</body>
+
+</html>

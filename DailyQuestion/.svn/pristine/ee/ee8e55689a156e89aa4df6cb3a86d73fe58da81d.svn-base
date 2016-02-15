@@ -1,0 +1,74 @@
+var ymma = {
+    /**
+     * 获取日期
+     * @param  {[type]} addDayCount 相减数
+     * @return {[type]}             形式为 xxxx-xx-xx
+     */
+    getDateStr: function(addDayCount) {
+        addDayCount = addDayCount || 0;
+        var dd = new Date();
+        dd.setDate(dd.getDate() + addDayCount); //获取AddDayCount天后的日期 
+        var y = dd.getFullYear();
+        var m = dd.getMonth() + 1; //获取当前月份的日期 
+        var d = dd.getDate();
+        return y + "-" + (m > 9 ? m : '0' + m) + "-" + (d > 9 ? d : '0' + d);
+    }
+}
+
+/**
+ * 判断数据库是否存在
+ * @param  {Function} callback [description]
+ * @return {[type]}            [description]
+ */
+function estimate_db(db ,api ,callback) {
+    api.getPrefs({
+        key: 'db'
+    }, function(ret, err) {
+        if (ret && ret.value) {
+            if (callback) callback();
+        } else {
+            $.showPreloader();
+            // 初始化数据库
+            db.openDatabase({
+                name: 'userStore'
+            }, function(ret, err) {
+                if (ret.status) {
+                    // 判断是否存在store表
+                    db.selectSql({
+                        name: 'userStore',
+                        sql: "select count(*) as e from sqlite_master where type='table' and name='store'"
+                    }, function(ret, err) {
+                        // 表不存在
+                        if (ret.status && ret.data[0].e == '0') {
+                            db.executeSql({
+                                name: 'userStore',
+                                sql: 'CREATE TABLE store(title varchar(255), day varchar(255))'
+                            }, function(ret, err) {
+                                if (ret.status) {
+                                    api.setPrefs({
+                                        key: 'db',
+                                        value: '1'
+                                    });
+                                    if (callback) callback();
+                                }
+                                $.hidePreloader();
+                            });
+                        }
+                        // 表已存在
+                        else {
+                            api.setPrefs({
+                                key: 'db',
+                                value: '1'
+                            });
+                            if (callback) callback();
+                            $.hidePreloader();
+                        }
+                    });
+                } else {
+                    $.hidePreloader();
+                }
+            });
+        }
+    });
+}
+

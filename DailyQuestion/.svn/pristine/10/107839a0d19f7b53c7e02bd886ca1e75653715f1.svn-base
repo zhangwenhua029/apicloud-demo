@@ -1,0 +1,148 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>fixedPane</title>
+    <link rel="stylesheet" type="text/css" href="../css/sm.min.css" />
+    <link rel="stylesheet" type="text/css" href="../css/icons.min.css" />
+    <style>
+    html,
+    body,
+    #header {
+        background: #F9F9F9;
+    }
+    
+    .list-setting .item-input {
+        width: auto;
+    }
+    
+    .list-setting .item-title.label {
+        width: auto;
+    }
+    
+    .list-setting .item-media {
+        font-size: 22px;
+        color: #5C5CD8;
+    }
+    
+    .bar.theme-dark:after,
+    .theme-dark .bar:after,
+    .bar:after {
+        background-color: inherit;
+    }
+    
+    .list-store-rela .item-link .item-inner {
+        background: none;
+    }
+    
+    .list-store-rela .item-input {
+        font-size: 80%;
+        color: gray;
+    }
+    
+    .theme-dark #header {
+        background: #222426;
+    }
+    
+    .theme-dark .title,
+    .theme-dark .content-block-title {
+        color: gray;
+    }
+    </style>
+</head>
+
+<body>
+    <!-- 标题栏 -->
+    <header class="bar bar-nav" id="header">
+        <button class="button button-link button-nav pull-left">
+            <span class="step size-21 pull-left open-panel" id="btnCloseStore">
+                    &nbsp;&nbsp;
+                  <i class="icon ion-ios-arrow-back"></i>
+                </span>
+        </button>
+        <h1 class="title">设置</h1>
+    </header>
+    <!-- 这里是页面内容区 -->
+    <div class="content">
+        <div class="list-block list-setting">
+            <ul>
+                <li>
+                    <div class="item-content">
+                        <div class="item-media">
+                            <i class="icon ion-eye"></i>
+                        </div>
+                        <div class="item-inner">
+                            <div class="item-title label">显示滚动条</div>
+                            <div class="item-input">
+                                <label class="label-switch">
+                                    <input type="checkbox">
+                                    <div class="checkbox"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="list-block list-setting list-store-rela">
+            <ul>
+                <li>
+                    <a href="javascript:;" id="btnClearStore" class="item-link item-content">
+                        <div class="item-media">
+                            <i class="icon ion-trash-b"></i>
+                        </div>
+                        <div class="item-inner">
+                            <div class="item-title label">清空收藏夹</div>
+                            <div class="item-input" id="storeNum"> </div>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+<script type='text/javascript' src='../script/zepto.min.js' charset='utf-8'></script>
+<script type='text/javascript' src='../script/sm.min.js' charset='utf-8'></script>
+<script type='text/javascript' src='../script/ymma.js' charset='utf-8'></script>
+<script>
+var dbsql = undefined;
+function addEvent() {
+    $('#btnCloseStore').click(function() {
+        api.closeWin();
+    });
+
+    $('#btnClearStore').click(function() {
+        api.confirm({
+            title: '请求确认',
+            msg: '确认要清空收藏夹吗？',
+            buttons: ['确定', '取消']
+        }, function(ret, err) {
+            if(ret.buttonIndex == '1'){// 确认
+                dbsql.delete('store', '2=2' ,function (res) {
+                    if(res.err) alert(res.err);
+                    else $('#storeNum').html('0篇'); 
+                })
+            }
+        });
+    })
+
+}
+apiready = function() {
+    var offsetHeight = getOffsetHeight(api);
+    $('#header').css('paddingTop', offsetHeight);
+    addEvent();
+    dbsql = initSqlite(api);
+    dbsql.init(function () {
+        dbsql.count({
+            table : 'store'
+        } , function (num) {
+            if(num) $('#storeNum').html(num+'篇');
+        })
+    });
+    ymma.addMoonEvent(api);
+};
+</script>
+
+</html>

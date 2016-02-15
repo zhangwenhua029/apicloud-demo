@@ -1,0 +1,188 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>fixedPane</title>
+    <link rel="stylesheet" type="text/css" href="../css/sm.min.css" />
+    <link rel="stylesheet" type="text/css" href="../css/icons.min.css" />
+    <style>
+    html,
+    body {
+        background: #F9F9F9;
+    }
+    
+    .bar.theme-dark:after,
+    .theme-dark .bar:after {
+        background-color: inherit;
+    }
+    
+    .theme-dark #header {
+        background: #222426;
+    }
+    
+    .theme-dark .title,
+    .theme-dark .content-block-title {
+        color: gray;
+    }
+    
+    .ion-ios-arrow-right {
+        margin-left: 1rem;
+        color: #ADABAB;
+    }
+    
+    #storeList * {
+        transition: all .3s ease-in-out;
+        animation-duration: .3ms;
+        -webkit-animation-duration: .3ms;
+        -webkit-animation-name: mui-node-inserted;
+        animation-name: mui-node-inserted;
+    }
+    
+    #storeList.checked .item-media {
+        display: flex;
+    }
+    
+    #storeList .item-media,
+    #storeList.checked .ion-ios-arrow-right,
+    #btnDeleteStore span,
+    #btnDeleteStore.checked .ion-trash-a,
+    #checkedBar {
+        display: none;
+    }
+    
+    #storeList .ion-ios-arrow-right,
+    #btnDeleteStore.checked span,
+    #btnDeleteStore .ion-trash-a {
+        display: inline;
+    }
+    </style>
+</head>
+
+<body>
+    <!-- 标题栏 -->
+    <header class="bar bar-nav" id="header">
+        <button class="button button-link button-nav pull-left">
+            <span class="step size-21 pull-left open-panel" id="btnCloseStore">&nbsp;&nbsp;
+              <i class="icon ion-ios-arrow-back"></i>
+            </span>
+        </button>
+        <button class="button button-link button-nav pull-right">
+            <span class="step size-21 pull-left open-panel" id="btnDeleteStore">
+              <i class="icon ion-trash-a"></i><span>完成</span>&nbsp;&nbsp;
+            </span>
+        </button>
+        <h1 class="title">我的收藏</h1>
+    </header>
+    <nav class="bar bar-tab" id="checkedBar">
+        <span class="tab-item">已选择<span id="checkedNum"></span>项</span>
+        <a class="tab-item external active" id="deleteChecked" href="javascript:;"> 删除全部 </a>
+    </nav>
+    <!-- 这里是页面内容区 -->
+    <div class="content native-scroll">
+        <div class="content-block-title">全部收藏</div>
+        <div class="list-block">
+            <ul id="storeList"></ul>
+        </div>
+    </div>
+</body>
+<script type='text/javascript' src='../script/zepto.min.js' charset='utf-8'></script>
+<script type='text/javascript' src='../script/sm.min.js' charset='utf-8'></script>
+<script type='text/javascript' src='../script/ymma.js' charset='utf-8'></script>
+<script>
+var dbsql = undefined;
+
+function getList() {
+    var $ulList = $('#storeList');
+    dbsql.query({
+        table: 'store', 
+        orderby : 'day desc'
+    }, function(data) {
+        if (data.err) {
+            alert(JSON.stringify(data));
+            return;
+        }
+        var html = [];
+        for (var i = 0, len = data.length, item ,day; i < len; i++) {
+            item = data[i];
+            day = item.day;
+            html.push('<li><label class="label-checkbox item-content" onclick="openArticle(\'' + day + '\')">');
+            html.push('<input type="checkbox" class="checkbox" name="checkbox" val="'+day+'">');
+            html.push('<div class="item-media"><i class="icon icon-form-checkbox"></i></div>');
+            html.push('<div class="item-inner"><div class="item-title-row">');
+            html.push('<div class="item-title">' + item.title + '</div></div><div class="item-subtitle">' + day);
+            html.push('<i class="icon ion-ios-arrow-right"></i></div></div></label></li>');
+        }
+        $ulList.html(html.join(''));
+    });
+}
+
+function openArticle(day) {
+    var $ulList = $('#storeList');
+    if ($ulList.hasClass('checked')) { //选择删除
+        setTimeout(function() {
+            $('#checkedNum').html($ulList.find('.checkbox:checked').length);
+        }, 50);
+    } else { //打开预览文章
+        api.openWin({
+            name: 'articleInfo',
+            url: './articleInfo.html',
+            pageParam: {day: day },
+            animation: {
+                type: "movein", //动画类型（详见动画类型常量）
+                subType: "from_right", //动画子类型（详见动画子类型常量）
+                duration: 300 //动画过渡时间，默认300毫秒
+            }
+        });
+    }
+}
+// addEvent();
+
+function addEvent() {
+    $('#btnCloseStore').click(function() {
+        api.closeWin();
+    });
+
+    $('#btnDeleteStore').click(function() {
+        var $this = $(this),
+            $ulList = $('#storeList');
+        if ($this.hasClass('checked')) { //取消
+            $this.removeClass('checked');
+            $ulList.removeClass('checked');
+            $('#checkedBar').hide(100);
+        } else { //选择删除
+            $this.addClass('checked');
+            $ulList.addClass('checked');
+            $('#checkedBar').show(100);
+        }
+    });
+
+    $('#deleteChecked').click(function () {
+        var $checked = $('#storeList').find('.checkbox:checked');
+        if($checked.length <= 0) return;
+        var days = '';
+        $checked.each(function () {
+            days += ",'"+$(this).attr('val')+"'";
+        });
+        if(!days) return;
+        dbsql.delete('store', 'day in ('+days.substring(1)+')' ,function (res) {
+            if(res.err) alert(res.err);
+            else {
+                $('#checkedNum').html('0');
+                getList();
+            }
+        })
+    })
+}
+apiready = function() {
+    var offsetHeight = getOffsetHeight(api);
+    $('#header').css('paddingTop', offsetHeight);
+    addEvent();
+    dbsql = initSqlite(api);
+    dbsql.init(getList);
+    ymma.addMoonEvent(api);
+};
+</script>
+
+</html>
