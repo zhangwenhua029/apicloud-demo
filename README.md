@@ -2,7 +2,7 @@
 收录了在学习apicloud过程中写的例子
 
 ## 1.DailyQuestion
-**N:** 仿照[每日一文](http://meiriyiwen.com/apps)做的demo，并增加了新的功能：
+**N:** 仿照每日一文做的demo，并增加了新的功能：
 ### 功能
 - [x] 本地收藏
 - [x] 离线阅读
