@@ -107,6 +107,9 @@
         });
 
         $('#articleShare').click(function () {
+            var db = api.require('db');
+            
+            return;
             var sharedMsg = {
                 text : $('#articleTitle').text()+' - '+$('#articleAuthor').text(),
                 type : "text"
@@ -125,8 +128,8 @@
                 });
             } else {
                 _this.addClass('store');
-                var sql = "insert into store(title ,day)values('" + $('#articleTitle').text() + "','" + $('#articleDay').val() + "')";
-                dbsql.executeSql({name: 'userStore', sql: sql }, function(ret, err) {
+                var values = "'"+$('#articleTitle').text()+"','"+$('#articleDay').val()+"'";
+                dbsql.insert('store' ,'title ,day' , values, function(ret, err) {
                     if (ret.status) {$.toast("收藏成功", 1000); } else {
                         api.alert({msg: err.msg });
                     }

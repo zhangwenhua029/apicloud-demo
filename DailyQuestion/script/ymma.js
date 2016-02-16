@@ -56,7 +56,7 @@ var ymma = {
 function initSqlite(api) {
     if (!api) {return; }
     var db = api.require('db');
-    var databaseName = 'userStore';
+    var databaseName = 'localUser';
     return {
         /**
          * 判断数据库表是否有效
@@ -68,32 +68,9 @@ function initSqlite(api) {
             api.getPrefs({key: 'db'}, function(ret, err) {
                 if (ret && ret.value) callback();
                 else {
-                    db.openDatabase({name: databaseName}, function(ret, err) {
-                        if (ret.status) {
-                            // 判断是否存在store表
-                            db.selectSql({
-                                name: databaseName,
-                                sql: "select count(*) as e from sqlite_master where type='table' and name='store'"
-                            }, function(ret, err) {
-                                // 表不存在
-                                if (ret.status && ret.data[0].e == '0') {
-                                    db.executeSql({
-                                        name: databaseName,
-                                        sql: 'CREATE TABLE store(title varchar(255), day varchar(255))'
-                                    }, function(ret, err) {
-                                        if (ret.status) {
-                                            api.setPrefs({key: 'db', value: '1'});
-                                            callback();
-                                        }
-                                    });
-                                }
-                                // 表已存在
-                                else {
-                                    api.setPrefs({key: 'db', value: '1'});
-                                    callback();
-                                }
-                            });
-                        }
+                    db.openDatabase({name: databaseName, path: 'widget://localUser.db'}, function(ret, err){
+                        api.setPrefs({key: 'db', value: '1'});
+                        callback();
                     });
                 }
             });
@@ -192,9 +169,7 @@ function initSqlite(api) {
                 if (ret.status) {
                     callback(ret.data[0].e);
                 } else {
-                    callback({
-                        res: '获取数据出错！'
-                    });
+                    callback({res: '获取数据出错！'});
                 }
             });
         },
@@ -231,6 +206,23 @@ function initSqlite(api) {
          */
         update: function(table, set, where, callback) {
 
+        },
+        /**
+         * 添加一条数据
+         * @param  {[type]}   table    要添加的表
+         * @param  {[type]}   columns  [description]
+         * @param  {[type]}   values   [description]
+         * @param  {Function} callback [description]
+         * @return {[type]}            [description]
+         */
+        insert: function (table ,columns ,values ,callback) {
+            callback = callback || function(s ,n) {};
+            if (!table || !columns || !values) {callback({err: '参数出错！'}); return; }
+
+            var sql = "insert into "+table+"("+columns+")values("+values+")";
+            dbsql.executeSql({name: databaseName, sql: sql }, function(ret, err) {
+                callback(ret, err);
+            });
         }
     }
 }
