@@ -8,55 +8,15 @@
     <link rel="stylesheet" type="text/css" href="../css/sm.min.css" />
     <link rel="stylesheet" type="text/css" href="../css/icons.min.css" />
     <style>
-    html,
-    body {
-        background: #F9F9F9;
-    }
-    
-    .bar.theme-dark:after,
-    .theme-dark .bar:after {
-        background-color: inherit;
-    }
-    
-    .theme-dark #header {
-        background: #222426;
-    }
-    
-    .theme-dark .title,
-    .theme-dark .content-block-title {
-        color: gray;
-    }
-    
-    .ion-ios-arrow-right {
-        margin-left: 1rem;
-        color: #ADABAB;
-    }
-    
-    #storeList * {
-        transition: all .3s ease-in-out;
-        animation-duration: .3ms;
-        -webkit-animation-duration: .3ms;
-        -webkit-animation-name: mui-node-inserted;
-        animation-name: mui-node-inserted;
-    }
-    
-    #storeList.checked .item-media {
-        display: flex;
-    }
-    
-    #storeList .item-media,
-    #storeList.checked .ion-ios-arrow-right,
-    #btnDeleteStore span,
-    #btnDeleteStore.checked .ion-trash-a,
-    #checkedBar {
-        display: none;
-    }
-    
-    #storeList .ion-ios-arrow-right,
-    #btnDeleteStore.checked span,
-    #btnDeleteStore .ion-trash-a {
-        display: inline;
-    }
+    html, body{background: #F9F9F9;}
+    .bar.theme-dark:after, .theme-dark .bar:after{background-color: inherit;}
+    .theme-dark #header{background: #222426;}
+    .theme-dark .title, .theme-dark .content-block-title{color: gray;}
+    .ion-ios-arrow-right{margin-left: 1rem;color: #ADABAB;}
+    #storeList *{transition: all .3s ease-in-out;animation-duration: .3ms;-webkit-animation-duration: .3ms;-webkit-animation-name: mui-node-inserted;animation-name: mui-node-inserted;}
+    #storeList.checked .item-media{display: flex;}
+    #storeList .item-media, #storeList.checked .ion-ios-arrow-right, #btnDeleteStore span, #btnDeleteStore.checked .ion-trash-a, #checkedBar{display: none;}
+    #storeList .ion-ios-arrow-right, #btnDeleteStore.checked span, #btnDeleteStore .ion-trash-a{display: inline;}
     </style>
 </head>
 
@@ -88,21 +48,14 @@
     </div>
 </body>
 <script type='text/javascript' src='../script/zepto.min.js' charset='utf-8'></script>
-<script type='text/javascript' src='../script/sm.min.js' charset='utf-8'></script>
 <script type='text/javascript' src='../script/ymma.js' charset='utf-8'></script>
 <script>
 var dbsql = undefined;
 
 function getList() {
     var $ulList = $('#storeList');
-    dbsql.query({
-        table: 'store', 
-        orderby : 'day desc'
-    }, function(data) {
-        if (data.err) {
-            alert(JSON.stringify(data));
-            return;
-        }
+    dbsql.query({table: 'store', orderby : 'day desc'}, function(data) {
+        if (data.err) { return; }
         var html = [];
         for (var i = 0, len = data.length, item ,day; i < len; i++) {
             item = data[i];
@@ -121,9 +74,7 @@ function getList() {
 function openArticle(day) {
     var $ulList = $('#storeList');
     if ($ulList.hasClass('checked')) { //选择删除
-        setTimeout(function() {
-            $('#checkedNum').html($ulList.find('.checkbox:checked').length);
-        }, 50);
+        setTimeout(function() {$('#checkedNum').html($ulList.find('.checkbox:checked').length); }, 50);
     } else { //打开预览文章
         api.openWin({
             name: 'articleInfo',

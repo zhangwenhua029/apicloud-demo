@@ -21,9 +21,7 @@ var ymma = {
      */
     merge: function(_old, _new) {
         var _o = _old;
-        for (var key in _new) {
-            _o[key] = _new[key]
-        }
+        for (var key in _new) {_o[key] = _new[key] }
         return _o;
     },
     /**
@@ -36,9 +34,7 @@ var ymma = {
             if( ret.value == 'moon' ) $body.addClass('theme-dark');
             else $body.removeClass('theme-dark');
         });
-        api.addEventListener({
-            name: 'event_Moon'
-        }, function(ret, err) {
+        api.addEventListener({name: 'event_Moon'}, function(ret, err) {
             api.closeSlidPane();
             if(ret.value == 'sun') $body.removeClass('theme-dark');
             else $body.addClass('theme-dark');
@@ -125,18 +121,10 @@ function initSqlite(api) {
             var sql = 'select ' + param.column + ' from ' + param.table + ' where ' + param.where;
             if (param.groupby) sql += ' group by ' + param.groupby;
             if (param.orderby) sql += ' order by ' + param.orderby;
-            if (param.limitBegin && param.limitEnd) sql += ' limit ' + param.limitBegin + ',' + param.limitEnd + ' ';
-            db.selectSql({
-                name: databaseName,
-                sql: sql
-            }, function(ret, err) {
-                if (ret.status && ret.data.length > 0) {
-                    callback(ret.data);
-                } else {
-                    callback({
-                        res: '获取数据出错，或数据条数为空！'
-                    });
-                }
+            if (param.limitEnd) sql += ' limit ' + param.limitBegin + ',' + param.limitEnd + ' ';
+            db.selectSql({name: databaseName, sql: sql }, function(ret, err) {
+                if (ret.status && ret.data.length > 0) callback(ret.data);
+                else callback({err: '获取数据出错！', content:err});
             });
         },
         /**
@@ -150,10 +138,7 @@ function initSqlite(api) {
          */
         count: function(param, callback) {
             callback = callback || function(s) {};
-            if (!param || !param.table) {
-                callback({err: '参数出错！'});
-                return;
-            }
+            if (!param || !param.table) {callback({err: '参数出错！'}); return; }
             var config = {
                 table: '',
                 where: '1=1',
@@ -162,15 +147,9 @@ function initSqlite(api) {
             param = ymma.merge(config, param);
             var sql = 'select count(1) as e from ' + param.table + ' where ' + param.where;
             if (param.groupby) sql += ' group by ' + param.groupby;
-            db.selectSql({
-                name: databaseName,
-                sql: sql
-            }, function(ret, err) {
-                if (ret.status) {
-                    callback(ret.data[0].e);
-                } else {
-                    callback({res: '获取数据出错！'});
-                }
+            db.selectSql({name: databaseName, sql: sql }, function(ret, err) {
+                if (ret.status) callback(ret.data[0].e);
+                else callback({err: '获取数据出错！', content:err});
             });
         },
         /**
@@ -181,20 +160,11 @@ function initSqlite(api) {
          */
         delete: function(table, where, callback) {
             callback = callback || function(s) {};
-            if (!table || !where || where == '1=1') {
-                callback({err: '参数出错！或条件为1=1！'});
-                return;
-            }
+            if (!table || !where || where == '1=1') {callback({err: '参数出错！或条件为1=1！'}); return; }
             var sql = "delete from " + table + " where " + where;
-            db.executeSql({
-                name: databaseName,
-                sql: sql
-            }, function(ret, err) {
-                if (ret.status) {
-                    callback({res: '删除成功'});
-                } else {
-                    callback({err: '删除出错！'});
-                }
+            db.executeSql({name: databaseName, sql: sql }, function(ret, err) {
+                if (ret.status) callback({res: '删除成功'});
+                else callback({err: '删除数据出错！', content:err});
             });
         },
         /**
@@ -218,7 +188,6 @@ function initSqlite(api) {
         insert: function (table ,columns ,values ,callback) {
             callback = callback || function(s ,n) {};
             if (!table || !columns || !values) {callback({err: '参数出错！'}); return; }
-
             var sql = "insert into "+table+"("+columns+")values("+values+")";
             dbsql.executeSql({name: databaseName, sql: sql }, function(ret, err) {
                 callback(ret, err);

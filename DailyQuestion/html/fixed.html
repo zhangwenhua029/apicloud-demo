@@ -5,89 +5,88 @@
     <meta charset="utf-8">
     <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
     <title>fixedPane</title>
-    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/sm.min.css" />
     <link rel="stylesheet" type="text/css" href="../css/icons.min.css" />
     <style>
-    html,
-    body {
-        background-color: rgb(39, 38, 38);
-    }
-    
-    li {
-        padding: 3px 10px;
-        padding: 3px 10px;
-        color: #777777;
-        box-shadow: 1px 1px #2B2B2B;
-        border-bottom: 1px solid #212121;
-        color: #777777;
-    }
-    
-    .liActive {
-        color: gainsboro;
-    }
-    
-    li a {
-        display: block;
-        padding: 10px 30px;
-    }
-    li a span{width: 20px;}
+    html, body{background-color: rgb(39, 38, 38);}
+    #nav li{padding: 3px 10px;padding: 3px 10px;color: #777777;box-shadow: 1px 1px #2B2B2B;border-bottom: 1px solid #212121;color: #777777;}
+    #nav li a:active{color: #0894ec;}
+    #nav li a{display: block;padding: 10px 30px;color: gray;}
+    #nav li a span{width: 20px;}
     #btnSun{display:none;}
+
+    .bar-bottom{bottom:1rem;background: inherit;}
+    .bar-bottom:before{background: inherit;}
+    .d-block{height: 2rem;padding-left: 30px;width: 7rem;cursor: pointer;color: gray;}
+    .d-block .d-icon ,.d-block .d-text{float:left;width:2rem;height: 2rem;}
+    .d-block .d-text{font-size: 0.55rem;width:2.5rem;line-height: 1.5rem;}
+
+    .bar-bottom .loading .spinner{display:block;}
+    .bar-bottom .ion-ios-cloud-download-outline{font-size: 1.2rem;top:.15rem;}
+    .bar-bottom .loading .icon{display: none;}
+    .spinner{width: 1.2rem;height: 1.2rem;position: relative;top: .15rem;display:none;}
+    .double-bounce1, .double-bounce2{width: 100%;height: 100%;border-radius: 50%;background-color: gray;opacity: 0.6;position: absolute;top: 0;left: 0;-webkit-animation: bounce 2.0s infinite ease-in-out;animation: bounce 2.0s infinite ease-in-out;}
+    .double-bounce2{-webkit-animation-delay: -1.0s;animation-delay: -1.0s;}
+    @-webkit-keyframes bounce{0%, 100%{-webkit-transform: scale(0.0)}
+    50%{-webkit-transform: scale(1.0)}}
+    @keyframes bounce{0%, 100%{transform: scale(0.0);-webkit-transform: scale(0.0);}
+    50%{transform: scale(1.0);-webkit-transform: scale(1.0);}}
     </style>
 </head>
 
 <body>
     <nav id="nav">
         <ul>
-            <li tapmode="liActive" id="btnToday">
+            <li id="btnToday">
                 <a><span class="step size-21" >
                       <i class="icon ion-android-time"></i>
                     </span>
                     今日文章
                 </a>
             </li>
-            <li tapmode="liActive" id="btnRandom">
+            <li id="btnRandom">
                 <a><span class="step size-21" >
                       <i class="icon ion-shuffle"></i>
                     </span>
                     随机一问
                 </a>
             </li>
-            <li tapmode="liActive" id="btnCollect">
+            <li id="btnCollect">
                 <a><span class="step size-21" >
                       <i class="icon ion-star"></i>
                     </span>
                     我的收藏
                 </a>
             </li>
-            <li tapmode="liActive" id="btnMoon">
+            <li id="btnMoon">
                 <a><span class="step size-21" >
                       <i class="icon ion-ios-moon"></i>
                     </span>
                     夜间模式
                 </a>
             </li>
-            <li tapmode="liActive" id="btnSun">
+            <li id="btnSun">
                 <a><span class="step size-21" >
                       <i class="icon ion-android-sunny"></i>
                     </span>
                     日间模式
                 </a>
             </li>
-            <li tapmode="liActive" id="btnHelp">
+            <li id="btnHelp">
                 <a><span class="step size-21" >
                       <i class="icon ion-help"></i>
                     </span>
                     使用帮助
                 </a>
             </li>
-            <li tapmode="liActive" id="btnAppraise">
+            <li id="btnAppraise">
                 <a><span class="step size-21" >
                       <i class="icon ion-heart"></i>
                     </span>
                     给个好评
                 </a>
             </li>
-            <li tapmode="liActive" id="btnSetting">
+            <li id="btnSetting">
                 <a><span class="step size-21" >
                       <i class="icon ion-ios-gear"></i>
                     </span>
@@ -96,25 +95,114 @@
             </li>
         </ul>
     </nav>
+
+    <nav class="bar-bottom bar bar-tab">
+        <div class="d-block" id="download">
+            <div class="d-icon">
+                <div class="spinner">
+                  <div class="double-bounce1"></div>
+                  <div class="double-bounce2"></div>
+                </div>
+                <i class="icon ion-ios-cloud-download-outline"></i>
+            </div>
+            <div class="d-text" id="downloadText"> 离线下载 </div>
+        </div>
+    </nav>
 </body>
 <script type='text/javascript' src='../script/zepto.min.js' charset='utf-8'></script>
+<script type='text/javascript' src='../script/ymma.js' charset='utf-8'></script>
 <script>
+var query = undefined;
+var model = undefined;
+var dbsql = undefined;
 apiready = function() {
+    query = api.require('query');
+    model = api.require('model');
+    dbsql = initSqlite(api);
+    model.config({
+        appId: 'A6900701267871',
+        appKey: 'D6B56E5A-AE13-190F-DE55-9557B8179F47'
+    });
     var offsetHeight = getOffsetHeight(api);
     $('#nav').css('paddingTop', offsetHeight + 20);
-    api.setStatusBarStyle({
-        style: 'dark',
-        color: '#000'
-    });
-    
-    $('#btnToday').click(function () {
-        api.sendEvent({
-            name: 'event_todayArticle'
+    api.setStatusBarStyle({style: 'dark', color: '#000'});
+    alert()
+    // 离线下载
+    // 因为apicloud 提供的接口没有 in 这种查询方法，所以暂时不用这种方式
+    // $('#download').click(function () {
+    //     // 1.查询出本地数据库的days
+    //     dbsql.query({table:'article' ,column:'day' ,orderby:'day desc' ,groupby:'day',limitEnd:100} ,function (data) {
+    //         var days = '';
+    //         if(!data.err && data.length > 0){
+    //             for(var i=0,len=data.length;i<len;i++){
+    //                 days += ",'"+data[i].day+"'";
+    //             }
+    //             days = days.substring(1);
+    //         }
+    //         // 2.在云端查询前100条，且day not in (days)
+    //         query.createQuery(function(ret, err) {
+    //             var qid = ret.qid;
+    //             query.limit({qid: qid, value: 100 });
+    //             query.desc({qid:qid ,column:'day'});
+    //             query.whereContainAll({qid: qid, column: 'day', value: days });
+    //             model.findAll({class: 'article', qid: qid }, function(ret, err) {
+    //                 alert(JSON.stringify(ret))
+    //                 // 3.获取到数据后，写入本地数据库中
+    //             });
+    //         });
+    //     })
+    // });
+    $('#download').click(function () {
+        var $this = $(this);
+        if($this.hasClass('loading')) return;
+        var $text = $('#downloadText');
+        $this.addClass('loading');
+        // 获取云端最近一百条数据，写入本地数据库中，在本地数据库中去重
+        query.createQuery(function(ret, err) {
+            var qid = ret.qid;
+            query.limit({qid: qid, value: 100 });
+            query.desc({qid:qid ,column:'day'});
+            model.findAll({class: 'article', qid: qid }, function(ret, err) {
+                if(err || !ret || ret.length <= 0) {
+                    $this.removeClass('loading');
+                    $text.html('结束');
+                    return;
+                }
+                var sql = "insert into article(uid,title ,author,content ,day) "
+                var values = [];
+                for(var i=0,len=ret.length,item;i<len;i++){
+                    item = ret[i];
+                    values.push(" select '"+item.id+"','"+item.title+"','"+item.author+"','"+item.content+"','"+item.day+"' ");
+                }
+                sql += values.join(' union all ');
+                dbsql.executeSql({name: 'localUser', sql: sql }, function(ret, err){
+                    // 去重
+                    if(ret.status){
+                        var distanctSql = "delete from article where rowid not in(select max(rowid) from article group by day)";
+                        dbsql.executeSql({name:'localUser' ,sql:distanctSql} ,function (ret ,err) {
+                            if(ret.status){ 
+                                $this.removeClass('loading');
+                                $text.html('完成');
+                            } else {
+                                api.alert({msg:err.msg}); 
+                            }
+                        });
+                    }else{
+                        api.alert({msg:err.msg});
+                    }
+                });
+            });
         });
     });
 
+    $('#btnToday').click(function () {
+        api.sendEvent({name: 'event_todayArticle'});
+    });
+
     $('#btnRandom').click(function () {
-        
+        dbsql.count({table:'article'} ,function (res) {
+            alert(res);
+        })
     });
 
     $('#btnCollect').click(function () {
@@ -127,29 +215,21 @@ apiready = function() {
                 duration:300                //动画过渡时间，默认300毫秒
             }
         });
-        setTimeout(function () {
-            api.closeSlidPane();
-        },200);
+        setTimeout(function () {api.closeSlidPane(); },200);
     });
 
     $('#btnMoon').click(function () {
         $(this).hide();
         $('#btnSun').show();
         api.setPrefs({key: 'moon', value: 'moon'});
-        api.sendEvent({
-            name: 'event_Moon' ,
-            extra : 'moon'
-        });
+        api.sendEvent({name: 'event_Moon' , extra : 'moon'});
     });
 
     $('#btnSun').click(function () {
         $(this).hide();
         $('#btnMoon').show();
         api.setPrefs({key: 'moon', value: 'sun'});
-        api.sendEvent({
-            name: 'event_Moon' ,
-            extra : 'sun'
-        });
+        api.sendEvent({name: 'event_Moon' , extra : 'sun'});
     });
 
     $('#btnHelp').click(function () {
@@ -170,9 +250,7 @@ apiready = function() {
                 duration:300                //动画过渡时间，默认300毫秒
             }
         });
-        setTimeout(function () {
-            api.closeSlidPane();
-        },200);
+        setTimeout(function () {api.closeSlidPane(); },200);
     });
     
 };

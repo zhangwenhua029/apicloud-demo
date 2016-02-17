@@ -96,6 +96,26 @@
                 </li>
             </ul>
         </div>
+
+        <div class="content-block-title">仅Wi-Fi下可用、自动下载最新文章</div>
+        <div class="list-block list-setting">
+            <ul>
+                <li>
+                    <div class="item-content">
+                        <div class="item-inner">
+                            <div class="item-title label">自动离线下载</div>
+                            <div class="item-input">
+                                <label class="label-switch">
+                                    <input type="checkbox" onchange="test(this)">
+                                    <div class="checkbox"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
         <div class="list-block list-setting list-store-rela">
             <ul>
                 <li>
@@ -118,6 +138,9 @@
 <script type='text/javascript' src='../script/ymma.js' charset='utf-8'></script>
 <script>
 var dbsql = undefined;
+function test (obj) {
+    console.log(obj.checked)
+}
 function addEvent() {
     $('#btnCloseStore').click(function() {
         api.closeWin();

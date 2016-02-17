@@ -26,6 +26,8 @@
     .theme-dark #articleContent, .theme-dark #articleContent p{color: gray;}
     .article-more{text-align: right;font-size: 24px;color: gray;display: none;}
     #articleShare{padding: 0px 10px;cursor: pointer;}
+    .space-betw { -webkit-box-pack: justify; -moz-box-pack: justify; -ms-flex-pack: justify; -webkit-justify-content: space-between; justify-content: space-between; }
+
     </style>
 </head>
 
@@ -49,7 +51,7 @@
             <h3 id="articleTitle"></h3>
             <hr />
             <div id="articleAuthor"></div>
-            <div id="articleContent"><span class="loading">正在加载中....</span></div>
+            <div id="articleContent" class="space-betw"><span class="loading">正在加载中....</span></div>
             <div class="row article-more">
                 <span id="articleShare"> <i class="icon ion-share"></i> </span>
             </div>
@@ -71,9 +73,8 @@
         api.addEventListener({name: 'event_todayArticle'}, function(ret, err) {
             api.closeSlidPane();
             getArticle(ymma.getDateStr(0), function(res) {
-                if (!res) return;
+                if (res.err) return;
                 $('.content').scrollTop(0);
-                loadArticle(res);
                 offsetNum = 0;
             });
         });
@@ -83,21 +84,19 @@
                 $.toast("没有了", 1000);
                 return;
             }
-            $.toast("后一天", 1000);
             getArticle(ymma.getDateStr(offsetNum + 1), function(res) {
-                if (!res) return;
+                if (res.err) return;
+                $.toast("后一天", 1000);
                 $('.content').scrollTop(0);
-                loadArticle(res);
                 offsetNum += 1;
             });
         });
         // 右滑触发的事件
         api.addEventListener({name: 'swiperight'}, function() {
-            $.toast("前一天", 1000);
             getArticle(ymma.getDateStr(offsetNum - 1), function(res) {
-                if (!res) return;
+                if (res.err) return;
+                $.toast("前一天", 1000);
                 $('.content').scrollTop(0);
-                loadArticle(res);
                 offsetNum -= 1;
             });
         });
@@ -107,15 +106,11 @@
         });
 
         $('#articleShare').click(function () {
-            var db = api.require('db');
-            
-            return;
             var sharedMsg = {
                 text : $('#articleTitle').text()+' - '+$('#articleAuthor').text(),
                 type : "text"
             };
             shareAction.share(sharedMsg);
-            
         });
 
         $('#btnStore').click(function() {
@@ -138,35 +133,69 @@
         })
     }
 
-    function loadArticle(data) {
-        $('#articleTitle').html(data.title);
-        $('#articleContent').html(data.content);
-        $('#articleAuthor').html(data.author || '');
-        dbsql.count({table: 'store', where: "day='" + $('#articleDay').val() + "'"}, function(size) {
-            if (size == '1') $('#btnStore').addClass('store');
-            else $('#btnStore').removeClass('store');
-        });
-    }
-
+    /**
+     * 得到一篇文章
+     * 思路：先查询本地离线的数据库，没有则查询云端数据，并显示完成后，将数据保存在本地的数据库中·
+     * @param  {[type]}   date     [description]
+     * @param  {Function} callback [description]
+     * @return {[type]}            [description]
+     */
     function getArticle(date, callback) {
         callback = callback || function(e) {};
-        query.createQuery(function(ret, err) {
-            var qid = ret.qid;
-            query.limit({qid: qid, value: 1 });
-            query.whereEqual({qid: qid, column: 'day', value: date });
-            setTimeout(function() {
+        /**
+         * 从本地获取数据
+         * @return {[type]} [description]
+         */
+        var getLocal = function () {
+            dbsql.query({table:'article' ,where:"day='"+date+"'"} ,function (data) {
+                // 没有数据->从云端读取
+                if(data.err || data.length <= 0) getCloud();
+                else handle(data[0]);
+            })
+        },
+        /**
+         * 从云端获取数据
+         * @return {[type]} [description]
+         */
+        getCloud = function () {
+            query.createQuery(function(ret, err) {
+                var qid = ret.qid;
+                query.limit({qid: qid, value: 1 });
+                query.whereEqual({qid: qid, column: 'day', value: date });
                 model.findAll({class: 'article', qid: qid }, function(ret, err) {
-                    if (!ret || ret.length <= 0) {
-                        $.toast("没有了", 1000);
-                        return;
-                    } else {
-                        $('#articleDay').val(date);
-                        $('#articleContent').html('<span class="loading">正在加载中....</span>');
-                        callback(ret[0]);
-                    }
+                    if (!ret || ret.length <= 0) { callback({err:'没有了'}); return; }
+                    data = ret[0];
+                    handle(data);
+                    // 插入到本地的数据库中
+                    setTimeout(function () {
+                        var values = "'"+data.title+"' ,'"+data.author+"' ,'"+data.content+"' ,'"+data.day+"' ";
+                        dbsql.insert('article' ,'title ,author,content ,day' , values ,function () {
+                            // 去重
+                            var distanctSql = "delete from article where rowid not in(select max(rowid) from article group by day)";
+                            dbsql.executeSql({name:'localUser' ,sql:distanctSql});
+                        });
+                    },1000)
                 });
-            }, 50);
-        });
+            });
+        },
+        /**
+         * 获取数据后，回调函数
+         * @param  {[type]} ret [description]
+         * @param  {[type]} err [description]
+         * @return {[type]}     [description]
+         */
+        handle = function (data) {
+            $('#articleDay').val(date);
+            $('#articleTitle').html(data.title);
+            $('#articleContent').html(data.content);
+            $('#articleAuthor').html(data.author || '');
+            dbsql.count({table: 'store', where: "day='" + date + "'"}, function(size) {
+                if (size == '1') $('#btnStore').addClass('store');
+                else $('#btnStore').removeClass('store');
+                callback({res:'加载成功！'});
+            });
+        }
+        getLocal();
     }
     apiready = function() {
         query = api.require('query');
@@ -185,8 +214,7 @@
         api.removePrefs({key: 'moon'});
         dbsql.init(function() {
             getArticle(ymma.getDateStr(0), function(res) {
-                if (!res) return;
-                loadArticle(res);
+                if (res.err) return;
                 $('.article-more').show();
             });
         });
