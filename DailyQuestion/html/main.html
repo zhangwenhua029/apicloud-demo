@@ -78,6 +78,39 @@
                 offsetNum = 0;
             });
         });
+
+        // 单击左侧【随机一篇】时，触发的事件
+        api.addEventListener({name: 'event_random'}, function(ret ,err) {
+            api.closeSlidPane();
+            var date = ymma.getDateStr();// 今天
+            dbsql.count({table:'article' ,where:"day <= '"+date+"' " } ,function (e) {
+                // alert(JSON.stringify(data));
+                if(e.err ||  e <= 0) {
+                    // 本地数据库没有，错误处理 -> 从云端随机获取
+                    // query.createQuery(function(ret, err) {
+                    //     var qid = ret.qid;
+                    //     query.limit({qid: qid, value: 1 });
+                    //     query.whereLessThan({qid: qid, column: 'day', value: date });
+                    //     query.justFields({qid:qid ,value:['day']});
+                    //     // alert('ss');
+                    //     model.findAll({class: 'article', qid: qid }, function(ret, err) {
+                    //         if (!ret || ret.length <= 0) { callback({err:'没有了'}); return; }
+                    //         // data = ret[0];
+                    //         alert(JSON.stringify(data));
+                    //     });
+                    // });
+                    return;
+                }else{
+                    var num = -ymma.getRandomNum(0 ,e-1);
+                    getArticle(ymma.getDateStr(num), function(res) {
+                        if (res.err) return;
+                        $('.content').scrollTop(0);
+                        offsetNum = num;
+                    });
+                }
+            })
+        });
+
         // 左滑触发的事件
         api.addEventListener({name: 'swipeleft'}, function() {
             if (offsetNum + 1 > 0) {
@@ -100,6 +133,8 @@
                 offsetNum -= 1;
             });
         });
+
+        
 
         $('#btnOpenSlid').click(function() {
             api.openSlidPane({type: 'left'});

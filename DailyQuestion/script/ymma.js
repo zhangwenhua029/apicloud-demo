@@ -25,6 +25,17 @@ var ymma = {
         return _o;
     },
     /**
+     * 生成 min ~ max 中的随机数
+     * @param  {[type]} min [description]
+     * @param  {[type]} max [description]
+     * @return {[type]}     [description]
+     */
+    getRandomNum : function (min ,max) {
+        var Range = max - min;   
+        var Rand = Math.random();   
+        return(min + Math.round(Rand * Range));   
+    },
+    /**
      * 监听夜间模式
      * @return {[type]} [description]
      */

@@ -211,9 +211,7 @@ apiready = function() {
     });
 
     $('#btnRandom').click(function () {
-        dbsql.count({table:'article'} ,function (res) {
-            alert(res);
-        })
+        api.sendEvent({name: 'event_random'});
     });
 
     $('#btnCollect').click(function () {
