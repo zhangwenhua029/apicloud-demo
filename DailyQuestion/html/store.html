@@ -13,10 +13,10 @@
     .theme-dark #header{background: #222426;}
     .theme-dark .title, .theme-dark .content-block-title{color: gray;}
     .ion-ios-arrow-right{margin-left: 1rem;color: #ADABAB;}
-    #storeList *{transition: all .3s ease-in-out;animation-duration: .3ms;-webkit-animation-duration: .3ms;-webkit-animation-name: mui-node-inserted;animation-name: mui-node-inserted;}
     #storeList.checked .item-media{display: flex;}
     #storeList .item-media, #storeList.checked .ion-ios-arrow-right, #btnDeleteStore span, #btnDeleteStore.checked .ion-trash-a, #checkedBar{display: none;}
     #storeList .ion-ios-arrow-right, #btnDeleteStore.checked span, #btnDeleteStore .ion-trash-a{display: inline;}
+    .liActive { background-color: #777777; }
     </style>
 </head>
 
@@ -55,7 +55,13 @@ var dbsql = undefined;
 function getList() {
     var $ulList = $('#storeList');
     dbsql.query({table: 'store', orderby : 'day desc'}, function(data) {
-        if (data.err) { return; }
+        if (data.err) { 
+            $ulList.html('');  
+            $('#btnDeleteStore').removeClass('checked');
+            $ulList.removeClass('checked');
+            $('#checkedBar').hide(100);
+            return; 
+        }
         var html = [];
         for (var i = 0, len = data.length, item ,day; i < len; i++) {
             item = data[i];
@@ -74,21 +80,28 @@ function getList() {
 function openArticle(day) {
     var $ulList = $('#storeList');
     if ($ulList.hasClass('checked')) { //选择删除
-        setTimeout(function() {$('#checkedNum').html($ulList.find('.checkbox:checked').length); }, 50);
+        setTimeout(function() { $('#checkedNum').html($ulList.find('.checkbox:checked').length); }, 50);
     } else { //打开预览文章
+        var systemType = api.systemType ,
+            systemVersion = api.systemVersion ,
+            animation = {duration: 300};
+        if(systemType == 'ios'){
+            if(parseInt(systemVersion) >= 8){
+                animation.type = 'un_curl';
+            }else{
+                animation.type = 'fade';          
+            }
+        }else{
+            animation.type = 'movein';    
+        }
         api.openWin({
             name: 'articleInfo',
             url: './articleInfo.html',
             pageParam: {day: day },
-            animation: {
-                type: "movein", //动画类型（详见动画类型常量）
-                subType: "from_right", //动画子类型（详见动画子类型常量）
-                duration: 300 //动画过渡时间，默认300毫秒
-            }
+            animation: animation
         });
     }
 }
-// addEvent();
 
 function addEvent() {
     $('#btnCloseStore').click(function() {
@@ -97,7 +110,8 @@ function addEvent() {
 
     $('#btnDeleteStore').click(function() {
         var $this = $(this),
-            $ulList = $('#storeList');
+            $ulList = $('#storeList') ,
+            $checked = $ulList.find('.checkbox');
         if ($this.hasClass('checked')) { //取消
             $this.removeClass('checked');
             $ulList.removeClass('checked');
@@ -106,6 +120,9 @@ function addEvent() {
             $this.addClass('checked');
             $ulList.addClass('checked');
             $('#checkedBar').show(100);
+            $checked.each(function () {
+                $(this)[0].checked = false;
+            })
         }
     });
 

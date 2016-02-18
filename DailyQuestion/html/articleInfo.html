@@ -33,7 +33,7 @@
         <button class="button button-link button-nav pull-left">
             <span class="step size-21 pull-left open-panel" id="btnReturn">
                     &nbsp;&nbsp;
-                  <i class="icon ion-ios-arrow-back"></i>
+                  <i class="icon ion-android-close"></i>
                 </span>
         </button>
     </header>
@@ -122,9 +122,21 @@ function getArticle(date, callback) {
 
 function addEvent() {
     $('#btnReturn').click(function() {
+        var systemType = api.systemType ,
+            systemVersion = api.systemVersion ,
+            animation = {duration: 300};
+        if(systemType == 'ios'){
+            if(parseInt(systemVersion) >= 8){
+                animation.type = 'suck';
+            }else{
+                animation.type = 'fade';          
+            }
+        }else{
+            animation.type = 'movein';    
+        }
         api.closeWin({
             name: 'articleInfo',
-            animation: {type: 'none', subType: 'from_left', duration: 300 }
+            animation: animation
         });
     });
 }
