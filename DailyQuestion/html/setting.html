@@ -106,7 +106,7 @@
                             <div class="item-title label">自动离线下载</div>
                             <div class="item-input">
                                 <label class="label-switch">
-                                    <input type="checkbox" onchange="test(this)">
+                                    <input type="checkbox" id="check_download" checked onchange="event_download(this)">
                                     <div class="checkbox"></div>
                                 </label>
                             </div>
@@ -138,8 +138,12 @@
 <script type='text/javascript' src='../script/ymma.js' charset='utf-8'></script>
 <script>
 var dbsql = undefined;
-function test (obj) {
-    console.log(obj.checked)
+function event_download (obj) {
+    if(obj.checked){
+        api.setPrefs({key: 'autoDownload', value: '0'});
+    }else{
+        api.setPrefs({key: 'autoDownload', value: '1'});
+    }
 }
 function addEvent() {
     $('#btnCloseStore').click(function() {
@@ -160,17 +164,17 @@ function addEvent() {
             }
         });
     })
-
 }
 apiready = function() {
+    api.getPrefs({key: 'autoDownload'}, function( ret, err ){
+        if(ret.value == '1'){$('#check_download')[0].checked = false; }
+    });
     var offsetHeight = getOffsetHeight(api);
     $('#header').css('paddingTop', offsetHeight);
     addEvent();
     dbsql = initSqlite(api);
     dbsql.init(function () {
-        dbsql.count({
-            table : 'store'
-        } , function (num) {
+        dbsql.count({table : 'store'} , function (num) {
             if(num) $('#storeNum').html(num+'篇');
         })
     });
