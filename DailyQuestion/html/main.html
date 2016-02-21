@@ -16,7 +16,7 @@
     .content-block{margin: 1rem 0;}
     .content-block h3{text-align: center;color: black;}
     #articleAuthor{padding: 10px;text-align: center;font-size: 14px;padding-bottom: 0px;}
-    #articleContent, #articleContent p{color: #232323;line-height: 28px;}
+    #articleContent, #articleContent p{color: #232323;line-height: 28px; text-align: justify; text-justify: inter-ideograph; word-break: initial; word-break: break-word;}
     #articleContent p{text-indent: 2em;}
     #articleContent .loading{text-align: center;display: block;}
     .theme-dark .bar:after{background-color: inherit;}
@@ -27,7 +27,7 @@
     .article-more{text-align: right;font-size: 24px;color: gray;display: none;}
     #articleShare{padding: 0px 10px;cursor: pointer;}
     .space-betw { -webkit-box-pack: justify; -moz-box-pack: justify; -ms-flex-pack: justify; -webkit-justify-content: space-between; justify-content: space-between; }
-
+    #bottomBar{display:none;}
     </style>
 </head>
 
@@ -58,7 +58,20 @@
             <input type="hidden" id="articleDay" /> 
         </div>
     </div>
+    <nav class="bar bar-tab" id="bottomBar">
+      <a class="tab-item external active" href="javascript:;" id="android_left">
+        <span class="icon ion-ios-arrow-left"></span>
+      </a>
+      <a class="tab-item external active" href="javascript:;" id="android_right">
+        <span class="icon ion-ios-arrow-right"></span>
+      </a>
+      <a class="tab-item external" href="javascript:;"></a>
+      <a class="tab-item external active" href="javascript:;" id="android_share">
+        <span class="icon ion-share"></span>
+      </a>
+    </nav>
     <script type='text/javascript' src='../script/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='../script/fx.js' charset='utf-8'></script>
     <script type='text/javascript' src='../script/sm.min.js' charset='utf-8'></script>
     <script type='text/javascript' src='../script/ymma.js' charset='utf-8'></script>
     <script>
@@ -69,6 +82,8 @@
     var offsetNum = 0;
 
     function addEvent() {
+        var systemType = api.systemType;
+        
         // 单击左侧【今日文章】时，触发的事件
         api.addEventListener({name: 'event_todayArticle'}, function(ret, err) {
             api.closeSlidPane();
@@ -110,42 +125,94 @@
                 }
             })
         });
-
-        // 左滑触发的事件
-        api.addEventListener({name: 'swipeleft'}, function() {
-            if (offsetNum + 1 > 0) {
-                $.toast("没有了", 1000);
-                return;
-            }
-            getArticle(ymma.getDateStr(offsetNum + 1), function(res) {
-                if (res.err) return;
-                $.toast("后一天", 1000);
-                $('.content').scrollTop(0);
-                offsetNum += 1;
+    
+        // 因为apicloud对Android手机事件监听的不完善，有时候不灵敏
+        // 苹果手机为左滑右滑进行上一篇下一篇阅读
+        if(systemType == 'ios'){
+            // 左滑触发的事件
+            api.addEventListener({name: 'swipeleft'}, function() {
+                if (offsetNum + 1 > 0) {
+                    $.toast("没有了", 1000);
+                    return;
+                }
+                getArticle(ymma.getDateStr(offsetNum + 1), function(res) {
+                    if (res.err) return;
+                    $.toast("后一天", 1000);
+                    $('.content').scrollTop(0);
+                    offsetNum += 1;
+                });
             });
-        });
-        // 右滑触发的事件
-        api.addEventListener({name: 'swiperight'}, function() {
-            getArticle(ymma.getDateStr(offsetNum - 1), function(res) {
-                if (res.err) return;
-                $.toast("前一天", 1000);
-                $('.content').scrollTop(0);
-                offsetNum -= 1;
+            // 右滑触发的事件
+            api.addEventListener({name: 'swiperight'}, function() {
+                getArticle(ymma.getDateStr(offsetNum - 1), function(res) {
+                    if (res.err) return;
+                    $.toast("前一天", 1000);
+                    $('.content').scrollTop(0);
+                    offsetNum -= 1;
+                });
             });
-        });
 
-        
+            $('#articleShare').click(function () {
+                var sharedMsg = {
+                    text : $('#articleTitle').text()+' - '+$('#articleAuthor').text(),
+                    type : "text"
+                };
+                shareAction.share(sharedMsg);
+            });
+        //Android手机为底部左右单击
+        }else{
+            $('#articleShare').hide();
+            var $bottomBar  = $('#bottomBar') ;
+            $bottomBar.show();
+            // 上滑触发的事件
+            api.addEventListener({name:'swipeup'},function(){
+               // $bottomBar.hide();
+               $bottomBar.animate({bottom:'-2.5rem'}, 200, 'ease-out');
+               // $header.animate({top: '-'+headerHeight+'px' }, 200, 'ease-out')
+            });
+
+            // 上滑触发的事件
+            api.addEventListener({name:'swipedown'},function(){
+               // $bottomBar.show();
+               $bottomBar.animate({bottom:'0rem'}, 200, 'ease-out');
+               // $header.animate({top:'0px'}, 200, 'ease-out')
+            });
+
+            $('#android_left').click(function () {
+                getArticle(ymma.getDateStr(offsetNum - 1), function(res) {
+                    if (res.err) return;
+                    $.toast("前一天", 1000);
+                    $('.content').scrollTop(0);
+                    offsetNum -= 1;
+                });
+            });
+
+            $('#android_right').click(function () {
+                if (offsetNum + 1 > 0) {
+                    $.toast("没有了", 1000);
+                    return;
+                }
+                getArticle(ymma.getDateStr(offsetNum + 1), function(res) {
+                    alert(JSON.stringify(res))
+                    if (res.err) return;
+                    $.toast("后一天", 1000);
+                    $('.content').scrollTop(0);
+                    offsetNum += 1;
+                });
+            });
+
+            $('android_share').click(function () {
+                var sharedMsg = {
+                    text : $('#articleTitle').text()+' - '+$('#articleAuthor').text(),
+                    type : "text"
+                };
+                shareAction.share(sharedMsg);
+            });
+        }
+
 
         $('#btnOpenSlid').click(function() {
             api.openSlidPane({type: 'left'});
-        });
-
-        $('#articleShare').click(function () {
-            var sharedMsg = {
-                text : $('#articleTitle').text()+' - '+$('#articleAuthor').text(),
-                type : "text"
-            };
-            shareAction.share(sharedMsg);
         });
 
         $('#btnStore').click(function() {

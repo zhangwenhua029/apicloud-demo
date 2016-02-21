@@ -53,6 +53,36 @@ var ymma = {
     }
 }
 
+/**
+ * 监听事件
+ * @return {[type]} [description]
+ */
+function eventListener(api){
+    if(!api) return;
+    /**
+     * 监听夜间、日间模式
+     * @return {[type]} [description]
+     */
+    var moonEvent = function () {
+        
+    },
+    /**
+     * 字体大小的事件
+     * @return {[type]} [description]
+     */
+    fontEvent = function () {
+        
+    },
+    /**
+     * android端可设置不显示滚轮，IOS8【apicloud】暂时没解决
+     * @return {[type]} [description]
+     */
+    scrollEvent = function () {
+        
+    }
+    moonEvent();
+}
+
 
 /**
  * sqlite3
